@@ -1,8 +1,10 @@
 package pl.kalinowski.w2b.skanner
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.SurfaceView
 import android.view.View
@@ -13,6 +15,10 @@ import org.opencv.android.*
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.cvtColor
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListener2 {
@@ -24,6 +30,11 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
 
     lateinit var biggest: MatOfPoint
     lateinit var imgWarped: Mat
+
+
+    private val FILE_NAME = "photo.png"
+
+    private lateinit var photoFile: File
 
 
     fun Canny(Button: View?) {
@@ -97,9 +108,11 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
 
                 photobtn.setOnClickListener { view ->
                     Toast.makeText(this, "Photo", Toast.LENGTH_SHORT).show()
-                    var btm: Bitmap
+                    var bmp: Bitmap
                     val image = getWarp(frame2, biggest)!!
-                    btm = converMat2Bitmat(frame1)!!
+                    bmp = converMat2Bitmat(getWarp(frame2, biggest)!!)!!
+
+                    storeImage(bmp)
                 }
                 return imgWarped
             }else {
@@ -122,14 +135,91 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
         val bmp: Bitmap
         bmp = Bitmap.createBitmap(width, hight, Bitmap.Config.ARGB_8888)
         val tmp: Mat
-        tmp = if (img.channels() == 1) Mat(width, hight, CvType.CV_8UC1, Scalar(1.0)) else Mat(width, hight, CvType.CV_8UC3, Scalar(3.0))
+        tmp = if (img.channels() == 1) Mat(width, hight, CvType.CV_8UC1, Scalar(1.0)) else Mat(
+            width, hight, CvType.CV_8UC3, Scalar(
+                3.0
+            )
+        )
         try {
-            if (img.channels() == 3) cvtColor(img, tmp, Imgproc.COLOR_RGB2BGRA) else if (img.channels() == 1) cvtColor(img, tmp, Imgproc.COLOR_GRAY2RGBA)
-            Utils.matToBitmap(tmp, bmp)
+            if (img.channels() == 3) cvtColor(img, tmp, Imgproc.COLOR_RGB2BGRA) else if (img.channels() == 1) cvtColor(
+                img,
+                tmp,
+                Imgproc.COLOR_GRAY2RGBA
+            )
+            Utils.matToBitmap(img, bmp)
         } catch (e: CvException) {
             Log.d("Expection", e.message)
         }
         return bmp
+    }
+
+    fun save(bmp: Bitmap){
+        try {
+            val fileOutputStream: FileOutputStream = openFileOutput(
+                "photo.png",
+                Context.MODE_PRIVATE
+            )
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+            Log.d("TEST", "SAVE")
+            fileOutputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    private fun storeImage(image: Bitmap) {
+        val pictureFile = getOutputMediaFile()
+
+        Log.d(
+            "TAG",
+            "f "
+        )
+        if (pictureFile == null) {
+            Log.d(
+               "TAG",
+                "Error creating media file, check storage permissions: "
+            ) // e.getMessage());
+            return
+        }
+        try {
+            val fos = FileOutputStream(pictureFile)
+            image.compress(Bitmap.CompressFormat.PNG, 90, fos)
+            fos.close()
+        } catch (e: FileNotFoundException) {
+            Log.d("TAG", "File not found: " )
+        } catch (e: IOException) {
+            Log.d("TAG", "Error accessing file: " )
+        }
+    }
+
+
+
+
+    private fun getOutputMediaFile(): File? {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        val mediaStorageDir = File(
+            Environment.getExternalStorageDirectory()
+                .toString() + "/Android/data/"
+                    + applicationContext.packageName
+                    + "/Files"
+        )
+
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null
+            }
+        }
+        // Create a media file name
+        val mediaFile: File
+        val mImageName = "photo.jpg"
+        mediaFile = File(mediaStorageDir.path + File.separator + mImageName)
+        return mediaFile
     }
 
 
@@ -139,6 +229,8 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
             cameraBridgeViewBase!!.disableView()
         }
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -164,8 +256,22 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
         Imgproc.cvtColor(pre_processed_image, pre_processed_image, 6)
         Imgproc.GaussianBlur(pre_processed_image, pre_processed_image, Size(5.0, 5.0), 1.0)
         Imgproc.Canny(pre_processed_image, pre_processed_image, 200.0, 200.0)
-        Imgproc.dilate(pre_processed_image, pre_processed_image, Imgproc.getStructuringElement(1, Size(5.0, 5.0)), Point(-1.0, -1.0), 2)
-        Imgproc.erode(pre_processed_image, pre_processed_image, Imgproc.getStructuringElement(1, Size(5.0, 5.0)), Point(-1.0, -1.0), 1)
+        Imgproc.dilate(
+            pre_processed_image, pre_processed_image, Imgproc.getStructuringElement(
+                1, Size(
+                    5.0,
+                    5.0
+                )
+            ), Point(-1.0, -1.0), 2
+        )
+        Imgproc.erode(
+            pre_processed_image, pre_processed_image, Imgproc.getStructuringElement(
+                1, Size(
+                    5.0,
+                    5.0
+                )
+            ), Point(-1.0, -1.0), 1
+        )
         return pre_processed_image
     }
 
@@ -184,7 +290,13 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
         var maxArea = 0.0
         var objCor: Long
         var rect: Rect
-        Imgproc.findContours(processed, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE)
+        Imgproc.findContours(
+            processed,
+            contours,
+            hierarchy,
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_NONE
+        )
         for (i in contours.indices) {
             val cont_area = Imgproc.contourArea(contours[i])
             contours[i].convertTo(contours2f, CvType.CV_32F)
@@ -246,16 +358,17 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
             }
         }
         val src = MatOfPoint2f(
-                sortedPoints[0],
-                sortedPoints[1],
-                sortedPoints[2],
-                sortedPoints[3])
+            sortedPoints[0],
+            sortedPoints[1],
+            sortedPoints[2],
+            sortedPoints[3]
+        )
         println("dst")
         val dst = MatOfPoint2f(
-                Point(0.0, 0.0),
-                Point(img.width().toDouble(), 0.0),
-                Point(0.0, img.height().toDouble()),
-                Point(img.width().toDouble(), img.height().toDouble())
+            Point(0.0, 0.0),
+            Point(img.width().toDouble(), 0.0),
+            Point(0.0, img.height().toDouble()),
+            Point(img.width().toDouble(), img.height().toDouble())
         )
         val warpMat = Imgproc.getPerspectiveTransform(src, dst)
         val destImage = Mat()
@@ -265,7 +378,11 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
 
         when (requestCode) {
             1 -> {
