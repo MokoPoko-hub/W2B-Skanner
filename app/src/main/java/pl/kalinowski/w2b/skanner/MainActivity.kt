@@ -1,15 +1,18 @@
 package pl.kalinowski.w2b.skanner
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.SurfaceView
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.opencv.android.*
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
-import kotlin.jvm.internal.Intrinsics
+import org.opencv.imgproc.Imgproc.cvtColor
 
 
 class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListener2 {
@@ -17,6 +20,10 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
     var cameraBridgeViewBase: CameraBridgeViewBase? = null
     var baseLoaderCallback: BaseLoaderCallback? = null
     var startCanny = false
+
+
+    lateinit var biggest: MatOfPoint
+    lateinit var imgWarped: Mat
 
 
     fun Canny(Button: View?) {
@@ -58,6 +65,9 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
 
 
 
+
+
+
     }
 
     override fun onCameraViewStarted(width: Int, height: Int) {
@@ -69,19 +79,57 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
     }
 
     override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame?): Mat {
-        Intrinsics.checkNotNullParameter(inputFrame, "inputFrame")
         val frame = inputFrame!!.rgba()
         val frame1 = frame.clone()
-        if (startCanny) {
-            val preProcessing = preProcessing(frame)
-            Intrinsics.checkNotNullExpressionValue(frame1, "frame1")
-            getContours(preProcessing, frame1)
-            return frame1
-        }
-        val preProcessing2 = preProcessing(frame)
-        Intrinsics.checkNotNull(preProcessing2)
-        return preProcessing2
+        val frame2 = frame.clone()
 
+        val photobtn:FloatingActionButton=findViewById(R.id.canny)
+
+
+
+
+
+        val preProcessing = preProcessing(frame)
+            biggest = getContours(preProcessing, frame1)!!
+            if(!biggest.empty()) {
+                //imgWarped = getWarp(frame2, biggest)!!
+                imgWarped = frame1
+
+                photobtn.setOnClickListener { view ->
+                    Toast.makeText(this, "Photo", Toast.LENGTH_SHORT).show()
+                    var btm: Bitmap
+                    val image = getWarp(frame2, biggest)!!
+                    btm = converMat2Bitmat(frame1)!!
+                }
+                return imgWarped
+            }else {
+                //System.out.println(biggest);
+                    imgWarped=frame2
+                photobtn.setOnClickListener { view ->
+                    Toast.makeText(this, "Wait for red rectangle", Toast.LENGTH_SHORT).show()
+                }
+
+                return imgWarped;
+            }
+
+
+            //return frame1
+    }
+
+    fun converMat2Bitmat(img: Mat): Bitmap? {
+        val width = img.width()
+        val hight = img.height()
+        val bmp: Bitmap
+        bmp = Bitmap.createBitmap(width, hight, Bitmap.Config.ARGB_8888)
+        val tmp: Mat
+        tmp = if (img.channels() == 1) Mat(width, hight, CvType.CV_8UC1, Scalar(1.0)) else Mat(width, hight, CvType.CV_8UC3, Scalar(3.0))
+        try {
+            if (img.channels() == 3) cvtColor(img, tmp, Imgproc.COLOR_RGB2BGRA) else if (img.channels() == 1) cvtColor(img, tmp, Imgproc.COLOR_GRAY2RGBA)
+            Utils.matToBitmap(tmp, bmp)
+        } catch (e: CvException) {
+            Log.d("Expection", e.message)
+        }
+        return bmp
     }
 
 
@@ -154,6 +202,66 @@ class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListe
             }
         }
         return bb
+    }
+
+
+    fun getWarp(img: Mat, approx: MatOfPoint): Mat? {
+        println(approx.toList())
+
+
+        //calculate the center of mass of our contour image using moments
+        val moment = Imgproc.moments(approx)
+        val x = (moment._m10 / moment._m00).toInt()
+        val y = (moment._m01 / moment._m00).toInt()
+
+        //SORT POINTS RELATIVE TO CENTER OF MASS
+        val sortedPoints = arrayOfNulls<Point>(4)
+        var data: DoubleArray
+        var count = 0
+        for (i in 0 until approx.rows()) {
+            data = approx[i, 0]
+            val datax = data[0]
+            val datay = data[1]
+            if (datax < x && datay < y) {
+                println("1")
+                sortedPoints[0] = Point(datax, datay)
+                count++
+            } else if (datax > x && datay < y) {
+                println("2")
+                sortedPoints[1] = Point(datax, datay)
+                count++
+            } else if (datax < x && datay > y) {
+                println("3")
+                sortedPoints[2] = Point(datax, datay)
+                count++
+            } else if (datax > x && datay > y) {
+                println("4")
+                sortedPoints[3] = Point(datax, datay)
+                count++
+            }
+        }
+        for (i in 0..3) {
+            if (sortedPoints[i] == null) {
+                return img
+            }
+        }
+        val src = MatOfPoint2f(
+                sortedPoints[0],
+                sortedPoints[1],
+                sortedPoints[2],
+                sortedPoints[3])
+        println("dst")
+        val dst = MatOfPoint2f(
+                Point(0.0, 0.0),
+                Point(img.width().toDouble(), 0.0),
+                Point(0.0, img.height().toDouble()),
+                Point(img.width().toDouble(), img.height().toDouble())
+        )
+        val warpMat = Imgproc.getPerspectiveTransform(src, dst)
+        val destImage = Mat()
+        Imgproc.warpPerspective(img, destImage, warpMat, img.size())
+        println(src.toList())
+        return destImage
     }
 
 
