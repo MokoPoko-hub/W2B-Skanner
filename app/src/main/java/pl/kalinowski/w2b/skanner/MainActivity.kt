@@ -17,6 +17,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Button
+import android.widget.Toast
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
@@ -33,11 +34,7 @@ import java.util.Locale
 @Suppress("DEPRECATION")
 class MainActivity : Activity() {
 
-
-
     val convert = ConvertPDF(this)
-
-    private var tekst = "tekst"
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,20 +53,15 @@ class MainActivity : Activity() {
                 )
                 requestPermissions(permissions, STORAGE_CODE)
             } else {
-                println("Zgody udzielone")
+                Log.i("Resource access", "The application grants access to resources")
             }
         }
         button.setOnClickListener {
-            //val i = Intent(this, ScannerActivity::class.java)
-            //startActivity(i)
-
-
-            convert.savePDF(tekst)
+            val i = Intent(this, ScannerActivity::class.java)
+            startActivity(i)
         }
         button2.setOnClickListener { searchFile() }
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     fun searchFile() {
@@ -86,11 +78,9 @@ class MainActivity : Activity() {
             path = path!!.substring(path.indexOf(":") + 1)
             println(convert.readTextFile(path))
         } else {
-            println("Nie wybrano pliku")
+            Toast.makeText(this, "Nie wybrano pliku", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -99,10 +89,9 @@ class MainActivity : Activity() {
     ) {
         if (requestCode == STORAGE_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                println("Dziala")
-                convert.savePDF(tekst)
+                Log.i("Resource access", "Access to resources has been granted")
             } else {
-                println("Nie udalo dodac sie elementow")
+                Log.e("Resource access", "Failed to access resources")
             }
         }
     }

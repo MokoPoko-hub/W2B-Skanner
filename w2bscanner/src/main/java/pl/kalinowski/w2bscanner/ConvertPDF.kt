@@ -6,6 +6,7 @@ import android.util.Log
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
+import org.omg.CORBA.Environment
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,14 +35,10 @@ class ConvertPDF(context: Context) {
     }
 
 
-
     fun savePDF(tekstToSave: String?) {
+
         val document = Document()
 
-
-
-
-        println(Environment.getExternalStoragePublicDirectory("Documents"))
         try {
             val fileName = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(
                 System.currentTimeMillis()
@@ -56,15 +53,13 @@ class ConvertPDF(context: Context) {
                     )
                 )
             )
-            println(context.getExternalFilesDir(null))
             document.open()
-            Log.d(this.toString(), tekstToSave!!)
             document.add(Paragraph(tekstToSave))
             document.close()
-            println("Zapisano")
+            Log.i("Svae file", "File saved in" + getExternalStoragePublicDirectory("Documents") + filePath)
+            Toast.makeText(context, "Zapisano plik", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            println(e)
+            Log.e("Svae file", "File saving failed")
         }
     }
-
 }
