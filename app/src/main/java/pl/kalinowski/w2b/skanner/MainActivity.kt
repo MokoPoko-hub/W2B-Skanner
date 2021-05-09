@@ -1,54 +1,13 @@
 package pl.kalinowski.w2b.skanner
 
-<<<<<<< HEAD
 
-import android.content.Intent
-import android.os.Bundle
-import android.os.Environment
+
 import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import pl.kalinowski.w2bscanner.Scanner
 import pl.kalinowski.w2bscanner.ScannerActivity
 
-
-
-
-class MainActivity : AppCompatActivity() {
-
-
-    lateinit var camera:Scanner
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-
-
-        Log.d("this", this.filesDir.toString())
-        
-
-        val i = Intent(this, ScannerActivity::class.java)
-        startActivity(i)
-
-
-
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-=======
 import androidx.annotation.RequiresApi
 import android.Manifest
 import android.app.Activity
@@ -134,8 +93,7 @@ class MainActivity : Activity() {
             var path = uri!!.path
             path = path!!.substring(path.indexOf(":") + 1)
             println(readTextFile(path))
-        }
-        else {
+        } else {
             println("Nie wybrano pliku")
         }
     }
@@ -186,8 +144,9 @@ class MainActivity : Activity() {
     companion object {
         private const val STORAGE_CODE = 1000
         private const val READ_FILE_CODE = 1010
->>>>>>> PDF-Comp
+
     }
+}
 
 
 
