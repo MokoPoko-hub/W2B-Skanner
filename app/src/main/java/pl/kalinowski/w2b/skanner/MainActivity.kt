@@ -79,12 +79,15 @@ class MainActivity : Activity() {
         startActivityForResult(intent, READ_FILE_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == READ_FILE_CODE && resultCode == RESULT_OK) {
-            val uri = data.data
+            val uri = data?.data
             var path = uri!!.path
             path = path!!.substring(path.indexOf(":") + 1)
             println(readTextFile(path))
+        }
+        else {
+            println("Nie wybrano pliku")
         }
     }
 
