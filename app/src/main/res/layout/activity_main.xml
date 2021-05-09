@@ -10,28 +10,11 @@
 
 
 
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/CameraView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/canny"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="10dp"
-        app:srcCompat="@drawable/ic_baseline_camera_alt_24"
-        app:tint="@color/black"
 
-        />
+
+
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

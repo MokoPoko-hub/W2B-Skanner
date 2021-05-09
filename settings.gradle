@@ -1,3 +1,4 @@
+include ':w2bscanner'
 include ':opencv451'
 include ':app'
 rootProject.name = "Skanner"
