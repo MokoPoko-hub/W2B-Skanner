@@ -20,6 +20,7 @@ import android.widget.Button
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
+import pl.kalinowski.w2bscanner.ConvertPDF
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +32,11 @@ import java.util.Locale
 
 @Suppress("DEPRECATION")
 class MainActivity : Activity() {
+
+
+
+    val convert = ConvertPDF(this)
+
     private var tekst = "tekst"
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -54,30 +60,16 @@ class MainActivity : Activity() {
             }
         }
         button.setOnClickListener {
-            savePDF(
-                tekst
-            )
+            //val i = Intent(this, ScannerActivity::class.java)
+            //startActivity(i)
+
+
+            convert.savePDF(tekst)
         }
         button2.setOnClickListener { searchFile() }
     }
 
-    private fun readTextFile(fileinput: String): String {
-        val path = "/storage/emulated/0/$fileinput"
-        println(fileinput)
-        val file = File(path)
-        val text = StringBuilder()
-        try {
-            val br = BufferedReader(FileReader(file))
-            var line: String?
-            while (br.readLine().also { line = it } != null) {
-                text.append(line)
-                text.append("\n")
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return text.toString()
-    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     fun searchFile() {
@@ -92,39 +84,13 @@ class MainActivity : Activity() {
             val uri = data?.data
             var path = uri!!.path
             path = path!!.substring(path.indexOf(":") + 1)
-            println(readTextFile(path))
+            println(convert.readTextFile(path))
         } else {
             println("Nie wybrano pliku")
         }
     }
 
-    private fun savePDF(tekstToSave: String?) {
-        val document = Document()
-        println(Environment.getExternalStoragePublicDirectory("Documents"))
-        try {
-            val fileName = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(
-                System.currentTimeMillis()
-            )
-            val filePath = "$fileName.pdf"
-            PdfWriter.getInstance(
-                document,
-                FileOutputStream(
-                    File(
-                        Environment.getExternalStoragePublicDirectory("Documents"),
-                        filePath
-                    )
-                )
-            )
-            println(getExternalFilesDir(null))
-            document.open()
-            document.addAuthor("Lewandowski")
-            document.add(Paragraph(tekstToSave))
-            document.close()
-            println("Zapisano")
-        } catch (e: Exception) {
-            println(e)
-        }
-    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -134,7 +100,7 @@ class MainActivity : Activity() {
         if (requestCode == STORAGE_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 println("Dziala")
-                savePDF(tekst)
+                convert.savePDF(tekst)
             } else {
                 println("Nie udalo dodac sie elementow")
             }

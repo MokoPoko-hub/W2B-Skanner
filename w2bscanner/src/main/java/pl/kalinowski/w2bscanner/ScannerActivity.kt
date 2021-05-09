@@ -23,6 +23,11 @@ import java.io.IOException
 
 class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListener2 {
 
+
+
+
+    val convert = ConvertPDF(this)
+
     var cameraBridgeViewBase: CameraBridgeViewBase? = null
     var baseLoaderCallback: BaseLoaderCallback? = null
     var startCanny = false
@@ -104,6 +109,8 @@ class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewLi
             imgWarped = frame1
 
             photobtn.setOnClickListener { view ->
+
+                // Wykonano zdjęcie
                 Toast.makeText(this, "Photo", Toast.LENGTH_SHORT).show()
                 var bmp: Bitmap
                 val image = getWarp(frame2, biggest)!!
@@ -112,8 +119,16 @@ class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewLi
                 bmp = rotateBitmap(bmp, 90F)!!
 
                 val scanner = ScannerOCR(this, "pol")
-                Log.d(this.toString(), scanner.getOCRResult(bmp))
-                storeImage(bmp)
+
+
+                convert.savePDF(scanner.getOCRResult(bmp))
+
+                //Log.d(this.toString(), scanner.getOCRResult(bmp))
+
+
+
+
+                //storeImage(bmp)
             }
             return imgWarped
         }else {

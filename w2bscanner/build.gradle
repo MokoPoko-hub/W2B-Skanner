@@ -44,4 +44,7 @@ dependencies {
     implementation project(path: ':opencv451')
     implementation "com.rmtheis:tess-two:9.1.0"
 
+
+    compile 'com.itextpdf:itextg:5.5.10'
+
 }
