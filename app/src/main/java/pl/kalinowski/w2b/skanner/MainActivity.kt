@@ -41,7 +41,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val button = findViewById<Button>(R.id.button)
-        val button2 = findViewById<Button>(R.id.button2)
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED || checkSelfPermission(
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -60,7 +60,7 @@ class MainActivity : Activity() {
             val i = Intent(this, ScannerActivity::class.java)
             startActivity(i)
         }
-        button2.setOnClickListener { searchFile() }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
