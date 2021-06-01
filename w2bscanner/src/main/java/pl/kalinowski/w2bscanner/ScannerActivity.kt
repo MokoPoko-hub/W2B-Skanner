@@ -115,7 +115,8 @@ class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewLi
                 Log.d(this.toString(), scanner.getOCRResult(bmp))
                 storeImage(bmp)
             }
-            return imgWarped
+            val image = getWarp(frame2, biggest)!!
+            return image;
         }else {
             //System.out.println(biggest);
             imgWarped=frame2
