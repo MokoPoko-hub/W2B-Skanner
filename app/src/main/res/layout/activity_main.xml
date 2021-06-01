@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/purple_200"
+    android:background="@drawable/back"
     android:orientation="vertical"
     >
 
@@ -33,7 +33,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_camera_alt_24"
                 android:backgroundTint="@color/purple_500"
-                android:tint="@color/purple_500" />
+                app:tint="@color/purple_500" />
 
 
             <TextView
@@ -56,25 +56,71 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.25"
-        android:orientation="vertical"
-
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="30dp"
         >
 
 
         <Button
             android:id="@+id/button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Take Photo"
             android:layout_gravity="center"
             android:gravity="center"
             android:background="@color/purple_500"
             android:padding="10dp"
+            android:layout_weight="1"
              />
 
 
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="0dp"
+        >
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_500"
+            android:spinnerMode="dropdown"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="30dp"
+        >
+
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Convert txt file"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@color/purple_500"
+            android:padding="10dp"
+            android:layout_weight="1"
+            />
     </LinearLayout>
 
 

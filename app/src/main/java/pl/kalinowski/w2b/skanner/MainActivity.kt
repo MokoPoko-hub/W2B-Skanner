@@ -16,12 +16,16 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.view.get
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
 import pl.kalinowski.w2bscanner.ConvertPDF
+import pl.kalinowski.w2bscanner.ScannerOCR
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
@@ -60,6 +64,31 @@ class MainActivity : Activity() {
             val i = Intent(this, ScannerActivity::class.java)
             startActivity(i)
         }
+
+
+        val categories = resources.getStringArray(R.array.category_array)
+        val arrayAdapter = ArrayAdapter(applicationContext, R.layout.dropdown_item, categories)
+
+        val spinner = findViewById<Spinner>(R.id.spinner)
+        spinner.adapter = arrayAdapter
+
+
+        val ScannerOCR = ScannerOCR(this, "")
+
+
+        when(spinner.getItemAtPosition(0)){
+            "Polish" -> ScannerOCR.setPolish()
+            "English" -> ScannerOCR.setEnglish()
+
+        }
+
+
+        val button1 = findViewById<Button>(R.id.button1)
+
+        button1.setOnClickListener {
+            searchFile()
+        }
+
 
     }
 

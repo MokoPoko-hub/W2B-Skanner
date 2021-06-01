@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Skanner</string>
+
+
+    <string-array name="category_array">
+        <item>Polish</item>
+        <item>English</item>
+    </string-array>
+
+
+
 </resources>

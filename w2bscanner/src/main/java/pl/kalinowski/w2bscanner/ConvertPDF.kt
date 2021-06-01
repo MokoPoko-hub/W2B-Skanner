@@ -30,6 +30,7 @@ class ConvertPDF(context: Context) {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        savePDF(text.toString())
         return text.toString()
     }
 

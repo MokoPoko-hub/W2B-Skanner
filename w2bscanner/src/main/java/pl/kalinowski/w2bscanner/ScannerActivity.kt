@@ -122,11 +122,8 @@ class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewLi
 
 
                 convert.savePDF(scanner.getOCRResult(bmp))
-
+                //finish()
                 //Log.d(this.toString(), scanner.getOCRResult(bmp))
-
-
-
 
                 //storeImage(bmp)
             }
@@ -391,7 +388,6 @@ class ScannerActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewLi
                 sortedPoints[2],
                 sortedPoints[3]
         )
-        println("dst")
         val dst = MatOfPoint2f(
                 Point(0.0, 0.0),
                 Point(img.width().toDouble(), 0.0),

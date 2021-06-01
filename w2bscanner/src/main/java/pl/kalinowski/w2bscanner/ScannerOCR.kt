@@ -23,6 +23,15 @@ class ScannerOCR(context: Context, language: String?) {
         mTess?.end()
     }
 
+
+    fun setPolish(){
+
+    }
+
+    fun setEnglish(){
+
+    }
+
     init {
         mTess = TessBaseAPI()
         var fileExistFlag = false
@@ -71,7 +80,7 @@ class ScannerOCR(context: Context, language: String?) {
                     Log.e(TAG, ex.message!!)
                 }
             } else {
-                Toast.makeText(context, "$srcFile can't be read.", Toast.LENGTH_SHORT).show()
+
             }
         }
     }
